@@ -1,0 +1,178 @@
+
+# coding: utf-8
+
+# <h1>二。取网页内容</h1>
+# 
+# 
+# requests和BeautifulSoup包
+import requests
+html = requests.get("http://www.pythonscraping.com/exercises/exercise1.html")
+print(html.text)
+
+
+# %%
+<html>
+<head>
+<title>A Useful Page</title>
+</head>
+<body>
+<h1>An Interesting Title</h1>
+<div>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</div>
+</body>
+</html>
+
+# In[5]:
+
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://www.pythonscraping.com/exercises/exercise1.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+print(bsObj.h1)
+
+
+
+# %%   从树的角度看
+
+s='''<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <title>simple</title>
+</head>
+<body>
+<h1>A simple web page</h1>
+<ul>
+    <li>List item one</li>
+    <li>List item two</li>
+</ul>
+<h2><a href="http://www.cs.luther.edu">Luther CS </a><h2>
+</body>
+</html>'''
+
+bs=BeautifulSoup(s,"lxml")
+print(bs.body.ul)
+# In[4]:
+
+import requests
+from bs4 import BeautifulSoup
+import sys
+
+
+def getTitle(url):
+    try:
+        html = requests.get(url)
+    except http_error as e:
+        print(e)
+        return None
+    try:
+        bsObj = BeautifulSoup(html.text,"lxml")
+        title = bsObj.body.h1
+    except AttributeError as e:
+        return None
+    return title
+
+title = getTitle("http://www.pythonscraping.com/exercises/exercise1.html")
+if title == None:
+    print("Title could not be found")
+else:
+    print(title)
+
+
+# In[2]:
+
+#selectByClass
+
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://www.pythonscraping.com/pages/warandpeace.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+nameList = bsObj.findAll("span", {"class":"green"})
+for name in nameList:
+    print(name.get_text())
+
+
+# In[5]:
+
+#selectByAttribute
+
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://www.pythonscraping.com/pages/warandpeace.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+allText = bsObj.findAll(id="text")
+print(allText[0].get_text())
+
+
+# In[6]:
+
+#findDescendants
+
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://www.pythonscraping.com/pages/page3.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+
+for child in bsObj.find("table",{"id":"giftList"}).children:
+    print(child)
+
+
+# In[9]:
+
+#findSiblings
+
+import requests
+from bs4 import BeautifulSoup
+html = requests.get("http://www.pythonscraping.com/pages/page3.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+
+for sibling in bsObj.find("table",{"id":"giftList"}).tr.next_siblings:
+    print(sibling) 
+
+
+# In[12]:
+
+#findParents
+
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://www.pythonscraping.com/pages/page3.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+print(bsObj.find("img",{"src":"../img/gifts/img1.jpg"}).parent.previous_sibling.get_text())
+
+
+
+# In[13]:
+
+#regularExpressions
+
+import requests
+from bs4 import BeautifulSoup
+import re
+
+html = requests.get("http://www.pythonscraping.com/pages/page3.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+images = bsObj.findAll("img", {"src":re.compile("\.\.\/img\/gifts\/img.*\.jpg")})
+for image in images: 
+    print(image["src"])
+
+
+# In[17]:
+
+#lambdaExpressions
+
+import requests
+from bs4 import BeautifulSoup
+html = requests.get("http://www.pythonscraping.com/pages/page2.html")
+bsObj = BeautifulSoup(html.text,"lxml")
+tags = bsObj.findAll(lambda tag: len(tag.attrs) == 2)
+for tag in tags:
+    print(tag)
+
